@@ -1,0 +1,20 @@
+# Beads local DB (JSONL is tracked, SQLite is not)
+.beads/beads.db
+.beads/*.db-shm
+.beads/*.db-wal
+
+# Ralph runtime state (iterate.md IS tracked)
+.ralph/ralph-loop.state.json
+.ralph/ralph-tasks.md
+.ralph/ralph-context.md
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
