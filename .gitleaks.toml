@@ -1,0 +1,10 @@
+title = "ai-dev-kit gitleaks config"
+
+[allowlist]
+  paths = [
+    '''node_modules/''',
+    '''.beads/''',
+    '''adr/''',
+    '''\.mise\.toml''',
+  ]
+  description = "Allow paths that don't contain real secrets"

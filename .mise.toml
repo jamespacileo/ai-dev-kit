@@ -1,0 +1,13 @@
+[tools]
+node = "lts"
+bun = "latest"
+
+[env]
+# Add project-specific environment variables here
+# DATABASE_URL = "..."
+
+[tasks]
+# Define common project tasks here
+# test = "npm test"
+# lint = "npx @biomejs/biome check ."
+# format = "npx @biomejs/biome format --write ."

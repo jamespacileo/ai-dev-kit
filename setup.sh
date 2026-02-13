@@ -2,12 +2,41 @@
 set -euo pipefail
 
 echo "Initializing ai-dev-kit..."
+echo ""
 
-# Check prerequisites
-command -v bd >/dev/null 2>&1 || { echo "Error: beads (bd) is not installed. Run: brew install beads (or npm install -g @beads/bd)"; exit 1; }
-command -v git >/dev/null 2>&1 || { echo "Error: git is not installed."; exit 1; }
+# ── Check core prerequisites ──────────────────────────────────────────
 
-# Initialize beads if not already done
+check_command() {
+  if command -v "$1" >/dev/null 2>&1; then
+    echo "  [ok] $1"
+    return 0
+  else
+    echo "  [missing] $1 — $2"
+    return 1
+  fi
+}
+
+echo "Checking prerequisites..."
+MISSING=0
+check_command bd "Install: brew install beads (or npm install -g @beads/bd)" || MISSING=1
+check_command git "Install git from https://git-scm.com" || MISSING=1
+check_command ralph "Install: npm install -g @th0rgal/ralph-wiggum" || MISSING=1
+
+# Optional tools (warn but don't block)
+echo ""
+echo "Checking optional tools..."
+check_command gitleaks "Install: brew install gitleaks (secret scanning)" || true
+check_command mise "Install: curl https://mise.run | sh (environment management)" || true
+
+if [ "$MISSING" -eq 1 ]; then
+  echo ""
+  echo "Error: Required tools are missing. Install them and re-run setup.sh"
+  exit 1
+fi
+
+# ── Initialize beads ──────────────────────────────────────────────────
+
+echo ""
 if [ ! -d ".beads" ]; then
   bd init --quiet
   echo "Beads initialized (.beads/ created)"
@@ -18,12 +47,42 @@ fi
 # Install beads git hooks
 bd hooks install 2>/dev/null && echo "Git hooks installed" || echo "Git hooks: skipped (may already exist)"
 
-# Verify
+# ── Install MCP servers (if claude CLI available) ─────────────────────
+
 echo ""
-echo "Setup complete."
+if command -v claude >/dev/null 2>&1; then
+  echo "Configuring MCP servers..."
+  echo "  MCP servers are configured in .claude/settings.json (project-level)"
+  echo "  They will activate when you open Claude Code in this directory"
+  echo "  Servers: sequential-thinking, context7, memory, playwright, repomix"
+else
+  echo "Claude Code CLI not found — skip MCP server setup"
+  echo "  Install Claude Code, then MCP servers will auto-configure from .claude/settings.json"
+fi
+
+# ── Install mise tool versions ────────────────────────────────────────
+
+echo ""
+if command -v mise >/dev/null 2>&1 && [ -f ".mise.toml" ]; then
+  echo "Installing tool versions via mise..."
+  mise install 2>/dev/null && echo "Tool versions pinned" || echo "mise install: skipped (check .mise.toml)"
+else
+  echo "mise not available — skip tool version pinning"
+fi
+
+# ── Summary ───────────────────────────────────────────────────────────
+
+echo ""
+echo "════════════════════════════════════════"
+echo "  Setup complete!"
+echo "════════════════════════════════════════"
+echo ""
 echo "Ready tasks: $(bd ready --json 2>/dev/null | grep -c '"id"' || echo 0)"
 echo ""
 echo "Next steps:"
-echo "  1. Start planning:  /superpowers:brainstorm (in Claude Code)"
-echo "  2. Create tasks:    bd create \"Task title\" -t task -p 2"
-echo "  3. Run agent loop:  ralph -f .ralph/iterate.md --agent claude-code --max-iterations 20"
+echo "  1. Start planning:       /superpowers:brainstorm (in Claude Code)"
+echo "  2. Decompose into tasks: /decompose (in Claude Code)"
+echo "  3. Check task status:    /status (in Claude Code)"
+echo "  4. Run agent loop:       /sprint (in Claude Code)"
+echo ""
+echo "Available skills: /decompose /sprint /review-sprint /status /create-adr"

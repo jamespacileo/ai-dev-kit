@@ -30,6 +30,34 @@ bd create "title" --deps "discovered-from:<id>" --json  # Link to originating ta
 - Write a failing test first, then implement (TDD)
 - If blocked after 3 attempts, add notes to the task and move to the next ready task
 
+## Available Skills
+
+| Skill | Purpose |
+|-------|---------|
+| decompose | Break down a plan into beads tasks |
+| sprint | Start a Ralph Wiggum autonomous loop |
+| review-sprint | Review results of a completed sprint |
+| status | Show beads task dashboard |
+| create-adr | Create an Architecture Decision Record |
+
+## Conventions
+
+### Conventional Commits
+
+All commit messages MUST follow the Conventional Commits format:
+```
+<type>: <description>
+```
+Types: `feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `ci`, `perf`, `build`, `revert`
+
+### Code Quality
+
+Run `npx @biomejs/biome check .` before committing. Biome handles JS/TS/CSS/JSON linting and formatting.
+
+### Architecture Decision Records
+
+When making significant technical decisions, create an ADR in `adr/` using the template at `adr/template.md`.
+
 ## Landing the Plane (Session Completion)
 
 **When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.

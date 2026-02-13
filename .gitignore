@@ -2,11 +2,44 @@
 .beads/beads.db
 .beads/*.db-shm
 .beads/*.db-wal
+.beads/daemon.*
+.beads/bd.sock
 
 # Ralph runtime state (iterate.md IS tracked)
 .ralph/ralph-loop.state.json
 .ralph/ralph-tasks.md
 .ralph/ralph-context.md
+
+# Claude Code local settings (project settings.json IS tracked)
+.claude/settings.local.json
+
+# MCP memory data
+.claude/memory/
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+.next/
+out/
+
+# Coverage
+coverage/
+
+# Biome
+.biome/
+
+# mise local overrides
+.mise.local.toml
+
+# Semgrep
+.semgrep/
+
+# Trunk (if users add it)
+.trunk/out/
+.trunk/logs/
 
 # OS
 .DS_Store
@@ -18,3 +51,8 @@ Thumbs.db
 *~
 .idea/
 .vscode/
+
+# Environment
+.env
+.env.local
+.env.*.local

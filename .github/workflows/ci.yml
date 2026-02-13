@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jdx/mise-action@v2
+
+      - name: Install dependencies
+        run: |
+          if [ -f "bun.lockb" ]; then
+            bun install --frozen-lockfile
+          elif [ -f "package-lock.json" ]; then
+            npm ci
+          elif [ -f "yarn.lock" ]; then
+            yarn install --frozen-lockfile
+          elif [ -f "pnpm-lock.yaml" ]; then
+            pnpm install --frozen-lockfile
+          fi
+
+      - name: Lint
+        run: npx @biomejs/biome lint .
+
+      - name: Format check
+        run: npx @biomejs/biome format . --check
+
+      - name: Test
+        run: |
+          if grep -q '"test"' package.json 2>/dev/null; then
+            npm test
+          else
+            echo "No test script found in package.json — skipping"
+          fi
