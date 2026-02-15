@@ -27,6 +27,7 @@ echo ""
 echo "Checking optional tools..."
 check_command gitleaks "Install: brew install gitleaks (secret scanning)" || true
 check_command mise "Install: curl https://mise.run | sh (environment management)" || true
+check_command docker "Install Docker Desktop 4.50+ for sandboxed execution" || true
 
 if [ "$MISSING" -eq 1 ]; then
   echo ""
@@ -70,6 +71,21 @@ else
   echo "mise not available — skip tool version pinning"
 fi
 
+# ── Docker Sandbox template ──────────────────────────────────────────
+
+echo ""
+if command -v docker >/dev/null 2>&1 && docker sandbox version >/dev/null 2>&1; then
+  echo "Building Docker Sandbox template..."
+  if docker build -t ai-dev-kit-sandbox:latest .sandbox/ 2>/dev/null; then
+    echo "Sandbox template built: ai-dev-kit-sandbox:latest"
+  else
+    echo "Sandbox template build: skipped (check .sandbox/Dockerfile)"
+  fi
+else
+  echo "Docker Sandboxes not available — skip template build"
+  echo "  Install Docker Desktop 4.50+ for sandboxed agent execution"
+fi
+
 # ── Summary ───────────────────────────────────────────────────────────
 
 echo ""
@@ -84,5 +100,6 @@ echo "  1. Start planning:       /superpowers:brainstorm (in Claude Code)"
 echo "  2. Decompose into tasks: /decompose (in Claude Code)"
 echo "  3. Check task status:    /status (in Claude Code)"
 echo "  4. Run agent loop:       /sprint (in Claude Code)"
+echo "  5. Sandboxed execution:  .sandbox/sandbox-ralph.sh . (requires Docker Desktop)"
 echo ""
 echo "Available skills: /decompose /sprint /review-sprint /status /create-adr"

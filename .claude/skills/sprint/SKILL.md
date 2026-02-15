@@ -24,8 +24,11 @@ description: |
 3. **Ask the user for configuration**:
    - Which agent: `claude-code` or `codex`
    - Maximum iterations (suggest 20 for a focused sprint, 30 for larger work)
+   - Sandboxed execution? (recommended for unattended/long-running loops)
 
-4. **Construct the ralph command**:
+4. **Construct the command**:
+
+   **Standard (supervised):**
    ```bash
    ralph -f .ralph/iterate.md \
      --agent <agent-choice> \
@@ -35,8 +38,15 @@ description: |
      --max-iterations <limit>
    ```
 
+   **Sandboxed (unattended — recommended for long-running loops):**
+   ```bash
+   .sandbox/sandbox-ralph.sh . <limit> <agent-choice>
+   ```
+   This runs the agent inside a Docker Sandbox microVM with `--dangerously-skip-permissions`
+   and deny-by-default networking. Requires Docker Desktop 4.50+.
+
 5. **Display the command** for the user to run. Remind them:
-   - Monitor with: `ralph --status`
+   - Monitor with: `ralph --status` (standard) or `docker sandbox exec -it <name> bash` (sandboxed)
    - Inject hints with: `ralph --add-context "hint text"`
    - Stop with: `Ctrl+C`
    - Switch agents by stopping and restarting with `--agent codex` or `--agent claude-code`

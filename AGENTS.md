@@ -58,6 +58,10 @@ Run `npx @biomejs/biome check .` before committing. Biome handles JS/TS/CSS/JSON
 
 When making significant technical decisions, create an ADR in `adr/` using the template at `adr/template.md`.
 
+## Sandbox Awareness
+
+If running inside a Docker Sandbox, this agent has full permissions. The sandbox provides microVM isolation — the security boundary is the sandbox itself. Docker commands use the sandbox's private daemon.
+
 ## Landing the Plane (Session Completion)
 
 **When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.

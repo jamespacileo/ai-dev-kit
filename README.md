@@ -41,6 +41,9 @@ npm install -g @biomejs/biome
 
 # commitlint — Conventional Commits validation
 npm install -g @commitlint/cli @commitlint/config-conventional
+
+# Docker Desktop 4.50+ — sandboxed agent execution (microVM isolation)
+# https://www.docker.com/products/docker-desktop/
 ```
 
 Verify:
@@ -173,6 +176,15 @@ ralph --add-context "hint"  # Inject a hint for the next iteration
 ```
 
 Stop with `Ctrl+C` when you want to switch agents or review progress.
+
+**Sandboxed execution** (recommended for unattended loops):
+
+```bash
+# Run Ralph in a Docker Sandbox — full permissions, isolated microVM
+.sandbox/sandbox-ralph.sh .
+```
+
+See [Sandboxed Execution](#sandboxed-execution) for details.
 
 ### 5. Review and Ship
 
@@ -368,6 +380,49 @@ To enable: install the [Renovate GitHub App](https://github.com/apps/renovate) o
 
 ---
 
+## Sandboxed Execution
+
+Run autonomous agent loops inside isolated microVMs. The sandbox provides the security boundary — `--dangerously-skip-permissions` is enabled by default inside Docker Sandboxes.
+
+Requires **Docker Desktop 4.50+** with Docker Sandboxes enabled.
+
+### Quick Start
+
+```bash
+# Simplest: run Claude Code in a sandbox
+docker sandbox run claude .
+
+# With ai-dev-kit tools (Ralph + Beads pre-installed)
+docker build -t ai-dev-kit-sandbox:latest .sandbox/
+docker sandbox run --load-local-template -t ai-dev-kit-sandbox:latest claude .
+
+# One-command sandboxed Ralph loop
+.sandbox/sandbox-ralph.sh .
+```
+
+### Network Policy
+
+For autonomous sessions, apply deny-by-default networking:
+
+```bash
+.sandbox/network-policy.sh <sandbox-name>
+```
+
+Whitelists only: Anthropic API, npm, GitHub. Add more domains as needed.
+
+### Monitoring
+
+```bash
+docker sandbox exec -it <sandbox-name> bash    # Shell into sandbox
+docker sandbox network log                      # View network activity
+docker sandbox save <name> checkpoint:v1        # Save snapshot
+docker sandbox ls                                # List all sandboxes
+```
+
+Full documentation: [`.sandbox/README.md`](.sandbox/README.md)
+
+---
+
 ## Agent Routing Guide
 
 | Task Type | Recommended Agent | Why |
@@ -453,6 +508,10 @@ ralph --remove-task 3              # Remove task at index
 | `.gitleaks.toml` | Secret detection config |
 | `renovate.json` | Dependency update bot config |
 | `adr/template.md` | Architecture Decision Record template |
+| `.sandbox/Dockerfile` | Custom Docker Sandbox template (Ralph + Beads) |
+| `.sandbox/network-policy.sh` | Deny-by-default network policy for sandboxes |
+| `.sandbox/sandbox-ralph.sh` | One-command sandboxed Ralph loop launcher |
+| `.sandbox/README.md` | Sandbox usage documentation |
 | `.github/workflows/` | CI, security, and release pipelines |
 | `.gitignore` | Comprehensive ignore rules |
 
@@ -487,3 +546,9 @@ Use `npm install -g @beads/bd` as an alternative to `brew install beads`.
 
 **Biome doesn't cover my language:**
 Biome only supports JS/TS/CSS/JSON. For other languages, add [Trunk Check](https://trunk.io) (`brew install trunk-io`) or configure language-specific linters.
+
+**Docker Sandbox not available:**
+Requires Docker Desktop 4.50+. Enable in: Docker Desktop > Settings > Features in development > Docker Sandboxes.
+
+**ANTHROPIC_API_KEY not found in sandbox:**
+The sandbox daemon doesn't inherit shell env vars. Add `export ANTHROPIC_API_KEY=sk-...` to `~/.bashrc` or `~/.zshrc`, then restart Docker Desktop.

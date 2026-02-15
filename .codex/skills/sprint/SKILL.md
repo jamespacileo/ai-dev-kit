@@ -22,9 +22,16 @@ description: "Start an autonomous Ralph Wiggum loop to work through beads tasks.
      --max-iterations 20
    ```
 
-4. Display the command for the user to run.
+4. For sandboxed execution (recommended for unattended loops):
+   ```bash
+   .sandbox/sandbox-ralph.sh . 20 codex
+   ```
+   Requires Docker Desktop 4.50+. Runs in a microVM with full permissions.
+
+5. Display the command for the user to run.
 
 Monitoring commands:
 - `ralph --status` — check progress
 - `ralph --add-context "hint"` — inject guidance
+- `docker sandbox exec -it <name> bash` — shell into sandbox
 - `Ctrl+C` — stop the loop

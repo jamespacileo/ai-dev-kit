@@ -79,6 +79,12 @@ When making a significant technical decision (new framework, library, pattern, i
 - Use `/create-adr` or manually create a file in `adr/`
 - Follow the template at `adr/template.md`
 
+## Sandbox Awareness
+
+If running inside a Docker Sandbox (`docker sandbox run`), this agent has `--dangerously-skip-permissions` enabled by default. The sandbox provides microVM isolation — the security boundary is the sandbox itself, not per-command approval. Docker commands use the sandbox's private daemon, not the host.
+
+If running on bare host, use Claude Code's `/sandbox` command for OS-level sandboxing, or run inside a Docker Sandbox for autonomous sessions.
+
 ## MCP Servers Available
 
 | Server | What It Provides |
